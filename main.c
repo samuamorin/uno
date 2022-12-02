@@ -189,6 +189,7 @@ int main() {
 
   Carta *cartasMesa = malloc(sizeof(Carta));;
   int *totalCartasMesa = malloc(sizeof(int));
+  *totalCartasMesa = 0;
 
   setbuf(stdin, NULL);  // stdin, stdout e stderr não terão buffers
   setbuf(stdout, NULL); // assim, nada é "guardado temporariamente"
