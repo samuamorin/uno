@@ -16,7 +16,7 @@ typedef struct carta {
   char naipe[4];
   char strCarta[6];
   int  indAdversario;
-  char mudaNaipe[4];
+  char* mudaNaipe;
 } Carta;
 
 void debug(char *message) { fprintf(stderr, "%s\n", message); }
@@ -106,7 +106,7 @@ Carta criar_carta(char *strCarta, bool minha, bool mao, int indiceAdversario) {
   carta.mao = mao;
   carta.minha = minha;
   carta.indAdversario = -1;
-  memset(carta.mudaNaipe, ' ', 4);
+  carta.mudaNaipe = NULL;
 
   if(indiceAdversario>=0){
     carta.indAdversario = indiceAdversario;
@@ -180,11 +180,12 @@ char* escolhe_proximo_naipe(Carta cartasProxOponente[], int totalCartasProxOpone
 
       if(totalCartasProxOponente>0){
           debug("escolheu outro naipe");
+          debug(cartasProxOponente[totalCartasProxOponente-1].naipe);
           return cartasProxOponente[totalCartasProxOponente-1].naipe;  
       }
 
       //♣ ♠ ♦ ♥
-
+      debug("vai com mesmo naipe");
       return NULL;
 
 }
@@ -237,6 +238,7 @@ int escolhe_carta(Carta* cartas, int* totalCartas, int* totalCartasMesa, Carta c
             if(cartas[i].efeito=='C'){
               cartasJogaveis[totalCargasJogaveis]=i;
               totalCargasJogaveis++;
+              possuiCoringa = true;
             }
 
             if((mudouNaipe || primeiraJogada) && strcmp(secondComplement, cartas[i].naipe)==0){
@@ -255,6 +257,9 @@ int escolhe_carta(Carta* cartas, int* totalCartas, int* totalCartasMesa, Carta c
 
             if(!mudouNaipe && cartaMesa.especial && cartaMesa.efeito==cartas[i].efeito){
                 debug("Encontrou efeito");
+                if(cartas[i].efeito=='V'){
+                  possuiCompra = true;
+                }
                 cartasJogaveis[totalCargasJogaveis]=i;
                 numero++;
                 totalCargasJogaveis++;
@@ -275,11 +280,20 @@ int escolhe_carta(Carta* cartas, int* totalCartas, int* totalCartasMesa, Carta c
         imprime_carta(cartas[cartasJogaveis[i]]);
     }
 
+    if(totalCargasJogaveis<1){
+      return -1;
+    }
+
     if(possuiCoringa){
       debug("possuiCoringa");
       for(int i=0; i<totalCargasJogaveis; i++){
           if(cartas[cartasJogaveis[i]].efeito =='C'){
-            strcpy(cartas[cartasJogaveis[i]].mudaNaipe, escolhe_proximo_naipe(cartasProxOponente, totalProxOponente, cartas, totalCartas));
+            cartas[cartasJogaveis[i]].mudaNaipe = malloc(sizeof(char)*4);
+            strcpy(cartas[cartasJogaveis[i]].mudaNaipe,
+                           escolhe_proximo_naipe(cartasProxOponente, totalProxOponente, cartas, totalCartas)!=NULL? 
+                           escolhe_proximo_naipe(cartasProxOponente, totalProxOponente, cartas, totalCartas):cartas[cartasJogaveis[i]].naipe);
+            debug(cartas[cartasJogaveis[i]].naipe);
+            debug(cartas[cartasJogaveis[i]].mudaNaipe);
             return cartasJogaveis[i];
           }
       }
@@ -288,7 +302,12 @@ int escolhe_carta(Carta* cartas, int* totalCartas, int* totalCartasMesa, Carta c
     if(possuiCompra && !possuiCoringa){
       for(int i=0; i<totalCargasJogaveis; i++){
           if(cartas[cartasJogaveis[i]].efeito =='V'){
-            strcpy(cartas[cartasJogaveis[i]].mudaNaipe, escolhe_proximo_naipe(cartasProxOponente, totalProxOponente, cartas, totalCartas));
+            cartas[cartasJogaveis[i]].mudaNaipe = malloc(sizeof(char)*4);
+            strcpy(cartas[cartasJogaveis[i]].mudaNaipe,
+                           escolhe_proximo_naipe(cartasProxOponente, totalProxOponente, cartas, totalCartas)!=NULL? 
+                           escolhe_proximo_naipe(cartasProxOponente, totalProxOponente, cartas, totalCartas):cartas[cartasJogaveis[i]].naipe);
+            debug(cartas[cartasJogaveis[i]].naipe);
+            debug(cartas[cartasJogaveis[i]].mudaNaipe);
             return cartasJogaveis[i];
           }
       }
@@ -299,26 +318,33 @@ int escolhe_carta(Carta* cartas, int* totalCartas, int* totalCartasMesa, Carta c
         for(int i=0; i<totalCargasJogaveis; i++){
           if(cartas[cartasJogaveis[i]].efeito==cartaMesa.efeito || cartas[cartasJogaveis[i]].numero==cartaMesa.numero){
               if(cartas[cartasJogaveis[i]].efeito=='A'){
-                 strcpy(cartas[cartasJogaveis[i]].mudaNaipe, escolhe_proximo_naipe(cartasProxOponente, totalProxOponente, cartas, totalCartas));
+                 debug("escolheu A");
+                 cartas[cartasJogaveis[i]].mudaNaipe = malloc(sizeof(char)*4);
+                 strcpy(cartas[cartasJogaveis[i]].mudaNaipe,
+                           escolhe_proximo_naipe(cartasProxOponente, totalProxOponente, cartas, totalCartas)!=NULL? 
+                           escolhe_proximo_naipe(cartasProxOponente, totalProxOponente, cartas, totalCartas):cartas[cartasJogaveis[i]].naipe);
+                 debug(cartas[cartasJogaveis[i]].naipe);
+                 debug(cartas[cartasJogaveis[i]].mudaNaipe);
               }
               debug("deu numero");
               return cartasJogaveis[i];
           }
         }
-    }else{
-        debug("naipe maior");
-        for(int i=0; i<totalCargasJogaveis; i++){
-          if(strcmp(cartas[cartasJogaveis[i]].naipe, mudouNaipe? secondComplement: cartaMesa.naipe)==0){
-              debug("deu naipe");
-              if(cartas[cartasJogaveis[i]].efeito=='A'){
-                 strcpy(cartas[cartasJogaveis[i]].mudaNaipe, escolhe_proximo_naipe(cartasProxOponente, totalProxOponente, cartas, totalCartas));
-              }
-              return cartasJogaveis[i];
-          }
-        }
     }
-
-    return -1;
+    
+    debug("naipe maior");
+    for(int i=0; i<totalCargasJogaveis; i++){
+      if(strcmp(cartas[cartasJogaveis[i]].naipe, mudouNaipe? secondComplement: cartaMesa.naipe)==0){
+          debug("deu naipe");
+          if(cartas[cartasJogaveis[i]].efeito=='A'){
+             cartas[cartasJogaveis[i]].mudaNaipe = malloc(sizeof(char)*4);
+             strcpy(cartas[cartasJogaveis[i]].mudaNaipe,
+                           escolhe_proximo_naipe(cartasProxOponente, totalProxOponente, cartas, totalCartas)!=NULL? 
+                           escolhe_proximo_naipe(cartasProxOponente, totalProxOponente, cartas, totalCartas):cartas[cartasJogaveis[i]].naipe);
+          }
+          return cartasJogaveis[i];
+      }
+   }
 
 }
 
@@ -518,8 +544,8 @@ int main() {
               }
         
               if(cartas[indiceCarta].efeito=='A' || cartas[indiceCarta].efeito=='C'){
-                  strcpy(secondComplement, cartas[indiceCarta].naipe);
-                  printf("DISCARD %s %s\n", cartas[indiceCarta].strCarta, cartas[indiceCarta].mudaNaipe==NULL? cartas[indiceCarta].naipe: cartas[indiceCarta].mudaNaipe);
+                  strcpy(secondComplement, cartas[indiceCarta].mudaNaipe);
+                  printf("DISCARD %s %s\n", cartas[indiceCarta].strCarta, secondComplement);
               }else{
                   printf("DISCARD %s\n", cartas[indiceCarta].strCarta);
               }
