@@ -47,6 +47,12 @@ char** le_jogadores(char temp[], int* totalJogadores) {
   return jogadores;
 }
 
+void verifica_adversarios(char **jogadores, int totalJogadores, int adversarios[], char my_id[]){
+
+
+
+}
+
 void preenche_naipe(char *strCarta, int inicio, char strNaipe[4]) {
   
   int j = 0;
@@ -62,10 +68,10 @@ void preenche_naipe(char *strCarta, int inicio, char strNaipe[4]) {
 
 }
 
-Carta criar_carta(char *strCarta, bool minha) {
+Carta criar_carta(char *strCarta, bool minha, bool mao) {
 
   Carta carta;
-  carta.mao = true;
+  carta.mao = mao;
   carta.minha = minha;
 
   char strNaipe[4] = "    ";
@@ -105,7 +111,7 @@ Carta* le_cartas_hand(char temp[], int* totalcartas, Carta* cartas) {
       cartas = realloc(cartas, sizeof(Carta) * (i + 1));
     }
 
-    cartas[i] = criar_carta(strCarta, true);
+    cartas[i] = criar_carta(strCarta, true, true);
 
     strCarta = strtok(NULL, " ]");
     i++;
@@ -124,7 +130,7 @@ Carta* le_carta_table(char temp[], int* totalcartas, Carta* cartas, bool minha) 
     cartas = realloc(cartas, sizeof(Carta) * (i + 1));
   }
 
-  cartas[i] = criar_carta(strCarta, minha);
+  cartas[i] = criar_carta(strCarta, minha, minha);
 
   i++;
   
@@ -132,19 +138,32 @@ Carta* le_carta_table(char temp[], int* totalcartas, Carta* cartas, bool minha) 
   return cartas;
 }
 
-int escolhe_carta(Carta* cartas, int* totalCartas, Carta cartaMesa, char secondComplement[]){
+int escolhe_carta(Carta* cartas, int* totalCartas, int* totalCartasMesa, Carta cartaMesa, char secondComplement[]){
+    debug("------ Carta na Mesa ----------");
+    imprime_carta(cartaMesa);
+  
+    bool primeiraJogada = *totalCartasMesa<2;
 
-    bool mudouNaipe = (cartaMesa.efeito == 'C' || cartaMesa.efeito == 'A') && *totalCartas>1;
+    bool mudouNaipe = (cartaMesa.efeito == 'C' || cartaMesa.efeito == 'A') && !primeiraJogada;
+    if(mudouNaipe){
+      debug("mudouNaipe");
+    }
 
-    for(int i=0; i<*totalCartas-1; i++){
+    if(primeiraJogada){
+      debug("primeiraJogada");
+      strcpy(secondComplement, cartaMesa.naipe);
+    }
+
+    debug("------ Escolhendo a jogada------");
+    for(int i=0; i<*totalCartas; i++){
          
          if(cartas[i].mao==true){
-
+            imprime_carta(cartas[i]);
             if(cartas[i].efeito=='C'){
               return i;
             }
 
-            if(mudouNaipe && strcmp(secondComplement, cartas[i].naipe)==0){
+            if((mudouNaipe || primeiraJogada) && strcmp(secondComplement, cartas[i].naipe)==0){
                 debug("Encontrou com mudouNaipe");
                 debug(secondComplement);
                 cartas[i].mao=false;
@@ -181,11 +200,12 @@ Carta* compra_carta(int quantidade, char action[], int* totalCartas, Carta* cart
   printf("BUY %d\n", quantidade);
   for(int i=0; i<quantidade; i++){
     scanf("%s ", action);
+    debug(action);
     cartas_compradas = le_carta_table(action, totalCartas, cartas_compradas, true);
   }
 
-  for(int i= *totalCartas-1;  i<*totalCartas; i++){
-    imprime_carta(cartas[i]);
+  for(int i= *totalCartas-quantidade;  i<*totalCartas; i++){
+    imprime_carta(cartas_compradas[i]);
   }
   return cartas_compradas;
 }
@@ -196,6 +216,7 @@ int main() {
   char my_id[MAX_ID_SIZE]; // identificador do seu bot
   char **jogadores = NULL;
   int *totalJogadores = malloc(sizeof(int));
+  int adversarios[2];
 
   Carta *cartas = malloc(sizeof(Carta));
   int *totalCartas = malloc(sizeof(int));
@@ -215,6 +236,8 @@ int main() {
   jogadores = le_jogadores(temp, totalJogadores);
 
   scanf("YOU %s\n", my_id);
+  verifica_adversarios(jogadores, *totalJogadores, adversarios, my_id);
+
 
   scanf("HAND [ %[^\n]\n", temp);
   cartas = le_cartas_hand(temp, totalCartas, cartas);
@@ -241,6 +264,8 @@ int main() {
   char complement[MAX_LINE];
   char secondComplement[MAX_LINE];
   bool pulouVez = false;
+  bool vouComprar = false;
+  bool sentidoHorario = true;
 
   while (1) {
 
@@ -259,18 +284,35 @@ int main() {
       
       fprintf(stderr, "compare DISCARD: %d \n",strcmp(action,"DISCARD"));
 
-      if(strcmp(action,"TURN")==0 && strcmp(complement,my_id)!=0 && totalJogadores==2){
+      if(strcmp(action,"TURN")==0 && strcmp(complement,my_id)!=0){
           debug("desliga pulouVez");
           pulouVez = false;
+          vouComprar = false;
+      }
+
+      if(strcmp(action,"BUY")==0 && strcmp(complement,my_id)!=0){
+          debug("desliga pulouVez");
+          pulouVez = false;
+          vouComprar = false;
       }
 
       if(strcmp(action,"DISCARD")==0){
         debug(" Entrou pra ler discard");
         cartasMesa = le_carta_table(complement, totalCartasMesa, cartasMesa, false);
         
-        if(cartasMesa[*totalCartasMesa-1].efeito=='R' && totalJogadores>2){
+        if(cartasMesa[*totalCartasMesa-1].efeito=='R'){
             debug("liga pulouVez");
             pulouVez = true;
+        }
+
+        if(cartasMesa[*totalCartasMesa-1].efeito=='V' || cartasMesa[*totalCartasMesa-1].efeito=='C'){
+            debug("liga vouComprar");
+            vouComprar = true;
+        }
+
+        if(cartasMesa[*totalCartasMesa-1].efeito=='D'){
+            debug("Inverteu o jogo");
+            sentidoHorario = !sentidoHorario;
         }
 
         debug("------TABLE DISCARD------");
@@ -289,7 +331,7 @@ int main() {
       if((cartasMesa[*totalCartasMesa -1].efeito=='R') && !cartasMesa[*totalCartasMesa -1].minha && pulouVez){
         debug("pulou vez");
         printf(" \n");
-      }else if((cartasMesa[*totalCartasMesa -1].efeito=='V' || cartasMesa[*totalCartasMesa -1].efeito=='C') && !cartasMesa[*totalCartasMesa -1].minha && !pulouVez){
+      }else if((cartasMesa[*totalCartasMesa -1].efeito=='V' || cartasMesa[*totalCartasMesa -1].efeito=='C') && !cartasMesa[*totalCartasMesa -1].minha && vouComprar){
         
         if(cartasMesa[*totalCartasMesa -1].efeito=='V'){
             debug("----- VOU COMPRAR 2 -----");
@@ -305,7 +347,7 @@ int main() {
 
       }else{
 
-          int indiceCarta = escolhe_carta(cartas, totalCartas, cartasMesa[*totalCartasMesa-1], secondComplement); 
+          int indiceCarta = escolhe_carta(cartas, totalCartas, totalCartasMesa, cartasMesa[*totalCartasMesa-1], secondComplement); 
           if(indiceCarta >= 0){
               
               debug("------CARTA NA MESA ------");
