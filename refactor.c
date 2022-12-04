@@ -15,13 +15,15 @@ typedef struct carta {
   int  numero;
   char naipe[4];
   char strCarta[6];
+  int  indAdversario;
+  char mudaNaipe[4];
 } Carta;
 
 void debug(char *message) { fprintf(stderr, "%s\n", message); }
 
 void imprime_carta(Carta carta){
-   fprintf(stderr, "carta: %s mao: %d minha: %d especial: %d efeito: %c numero: %d naipe: %s \n", 
-     carta.strCarta, carta.mao, carta.minha, carta.especial, carta.efeito, carta.numero, carta.naipe);
+   fprintf(stderr, "carta: %s mao: %d minha: %d especial: %d efeito: %c numero: %d naipe: %s indAdversario: %d mudaNaipe: %s\n", 
+     carta.strCarta, carta.mao, carta.minha, carta.especial, carta.efeito, carta.numero, carta.naipe, carta.indAdversario, carta.mudaNaipe);
 }
 
 char** le_jogadores(char temp[], int* totalJogadores) {
@@ -98,11 +100,17 @@ void preenche_naipe(char *strCarta, int inicio, char strNaipe[4]) {
 
 }
 
-Carta criar_carta(char *strCarta, bool minha, bool mao) {
+Carta criar_carta(char *strCarta, bool minha, bool mao, int indiceAdversario) {
 
   Carta carta;
   carta.mao = mao;
   carta.minha = minha;
+  carta.indAdversario = -1;
+  memset(carta.mudaNaipe, ' ', 4);
+
+  if(indiceAdversario>=0){
+    carta.indAdversario = indiceAdversario;
+  }
 
   char strNaipe[4] = "    ";
 
@@ -141,7 +149,7 @@ Carta* le_cartas_hand(char temp[], int* totalcartas, Carta* cartas) {
       cartas = realloc(cartas, sizeof(Carta) * (i + 1));
     }
 
-    cartas[i] = criar_carta(strCarta, true, true);
+    cartas[i] = criar_carta(strCarta, true, true, -1);
 
     strCarta = strtok(NULL, " ]");
     i++;
@@ -151,7 +159,7 @@ Carta* le_cartas_hand(char temp[], int* totalcartas, Carta* cartas) {
   return cartas;
 }
 
-Carta* le_carta_table(char temp[], int* totalcartas, Carta* cartas, bool minha) {
+Carta* le_carta_table(char temp[], int* totalcartas, Carta* cartas, bool minha, int indiceAdversario) {
 
   int i = *totalcartas;
   char *strCarta = temp;
@@ -160,7 +168,7 @@ Carta* le_carta_table(char temp[], int* totalcartas, Carta* cartas, bool minha) 
     cartas = realloc(cartas, sizeof(Carta) * (i + 1));
   }
 
-  cartas[i] = criar_carta(strCarta, minha, minha);
+  cartas[i] = criar_carta(strCarta, minha, minha, indiceAdversario);
 
   i++;
   
@@ -168,11 +176,48 @@ Carta* le_carta_table(char temp[], int* totalcartas, Carta* cartas, bool minha) 
   return cartas;
 }
 
-int escolhe_carta(Carta* cartas, int* totalCartas, int* totalCartasMesa, Carta cartaMesa, char secondComplement[]){
+char* escolhe_proximo_naipe(Carta cartasProxOponente[], int totalCartasProxOponente, Carta* cartas, int *totalCartas){
+
+      if(totalCartasProxOponente>0){
+          debug("escolheu outro naipe");
+          return cartasProxOponente[totalCartasProxOponente-1].naipe;  
+      }
+
+      //♣ ♠ ♦ ♥
+
+      return NULL;
+
+}
+
+int escolhe_carta(Carta* cartas, int* totalCartas, int* totalCartasMesa, Carta cartaMesa, char secondComplement[], Carta* cartasAdversarios, int* totalAdversarios, int adversario){
     debug("------ Carta na Mesa ----------");
     imprime_carta(cartaMesa);
+
+    int cartasJogaveis[*totalCartas];
+    int totalCargasJogaveis = 0;
+
+    for(int i=0; i < *totalCartas; i++){
+      cartasJogaveis[0] = -1;
+    }
+
+
+    Carta cartasProxOponente[*totalAdversarios];
+    int totalProxOponente = 0;
+
+    for(int i = 0; i< *totalAdversarios; i++){
+        if(cartasAdversarios[i].indAdversario==adversario){
+          cartasProxOponente[totalProxOponente]=cartasAdversarios[i];
+          totalProxOponente++;
+        }
+    }
+
   
     bool primeiraJogada = *totalCartasMesa<2;
+
+    int naipe = 0;
+    int numero = 0;
+    bool possuiCoringa = false;
+    bool possuiCompra = false;
 
     bool mudouNaipe = (cartaMesa.efeito == 'C' || cartaMesa.efeito == 'A') && !primeiraJogada;
     if(mudouNaipe){
@@ -184,41 +229,93 @@ int escolhe_carta(Carta* cartas, int* totalCartas, int* totalCartasMesa, Carta c
       strcpy(secondComplement, cartaMesa.naipe);
     }
 
-    debug("------ Escolhendo a jogada------");
+    debug("------ Escolhendo todas as cartas jogaveis ------");
     for(int i=0; i<*totalCartas; i++){
          
          if(cartas[i].mao==true){
-            imprime_carta(cartas[i]);
+            //imprime_carta(cartas[i]);
             if(cartas[i].efeito=='C'){
-              return i;
+              cartasJogaveis[totalCargasJogaveis]=i;
+              totalCargasJogaveis++;
             }
 
             if((mudouNaipe || primeiraJogada) && strcmp(secondComplement, cartas[i].naipe)==0){
                 debug("Encontrou com mudouNaipe");
                 debug(secondComplement);
-                cartas[i].mao=false;
-                return i;
+                cartasJogaveis[totalCargasJogaveis]=i;
+                totalCargasJogaveis++;
             }
 
             if(!mudouNaipe && strcmp(cartaMesa.naipe, cartas[i].naipe)==0){
                 debug("Encontrou Naipe");
-                cartas[i].mao=false;
-                return i;
+                cartasJogaveis[totalCargasJogaveis]=i;
+                naipe++;
+                totalCargasJogaveis++;
             }
 
             if(!mudouNaipe && cartaMesa.especial && cartaMesa.efeito==cartas[i].efeito){
                 debug("Encontrou efeito");
-                cartas[i].mao=false;
-                return i;
+                cartasJogaveis[totalCargasJogaveis]=i;
+                numero++;
+                totalCargasJogaveis++;
             }
 
             if(!mudouNaipe && cartaMesa.numero > 0 && cartaMesa.numero==cartas[i].numero){
                 debug("Encontrou numero");
-                cartas[i].mao=false;
-                return i;
+                cartasJogaveis[totalCargasJogaveis]=i;
+                numero++;
+                totalCargasJogaveis++;
             }
 
          }  
+    }
+
+    debug("-----CARTAS JOGAVEIS-----");
+    for(int i = 0; i<totalCargasJogaveis; i++){
+        imprime_carta(cartas[cartasJogaveis[i]]);
+    }
+
+    if(possuiCoringa){
+      debug("possuiCoringa");
+      for(int i=0; i<totalCargasJogaveis; i++){
+          if(cartas[cartasJogaveis[i]].efeito =='C'){
+            strcpy(cartas[cartasJogaveis[i]].mudaNaipe, escolhe_proximo_naipe(cartasProxOponente, totalProxOponente, cartas, totalCartas));
+            return cartasJogaveis[i];
+          }
+      }
+    }
+
+    if(possuiCompra && !possuiCoringa){
+      for(int i=0; i<totalCargasJogaveis; i++){
+          if(cartas[cartasJogaveis[i]].efeito =='V'){
+            strcpy(cartas[cartasJogaveis[i]].mudaNaipe, escolhe_proximo_naipe(cartasProxOponente, totalProxOponente, cartas, totalCartas));
+            return cartasJogaveis[i];
+          }
+      }
+    }
+
+    if(numero > naipe){
+        debug("numero maior");
+        for(int i=0; i<totalCargasJogaveis; i++){
+          if(cartas[cartasJogaveis[i]].efeito==cartaMesa.efeito || cartas[cartasJogaveis[i]].numero==cartaMesa.numero){
+              if(cartas[cartasJogaveis[i]].efeito=='A'){
+                 strcpy(cartas[cartasJogaveis[i]].mudaNaipe, escolhe_proximo_naipe(cartasProxOponente, totalProxOponente, cartas, totalCartas));
+              }
+              debug("deu numero");
+              return cartasJogaveis[i];
+          }
+        }
+    }else{
+        debug("naipe maior");
+        for(int i=0; i<totalCargasJogaveis; i++){
+          if(strcmp(cartas[cartasJogaveis[i]].naipe, mudouNaipe? secondComplement: cartaMesa.naipe)==0){
+              debug("deu naipe");
+              if(cartas[cartasJogaveis[i]].efeito=='A'){
+                 strcpy(cartas[cartasJogaveis[i]].mudaNaipe, escolhe_proximo_naipe(cartasProxOponente, totalProxOponente, cartas, totalCartas));
+              }
+              return cartasJogaveis[i];
+          }
+        }
     }
 
     return -1;
@@ -231,7 +328,7 @@ Carta* compra_carta(int quantidade, char action[], int* totalCartas, Carta* cart
   for(int i=0; i<quantidade; i++){
     scanf("%s ", action);
     debug(action);
-    cartas_compradas = le_carta_table(action, totalCartas, cartas_compradas, true);
+    cartas_compradas = le_carta_table(action, totalCartas, cartas_compradas, true, -1);
   }
 
   for(int i= *totalCartas-quantidade;  i<*totalCartas; i++){
@@ -256,6 +353,10 @@ int main() {
   int *totalCartasMesa = malloc(sizeof(int));
   *totalCartasMesa = 0;
 
+  Carta *cartasAdversariosNaoPossuem = malloc(sizeof(Carta));
+  int *totalAdversariosNaoPossuem = malloc(sizeof(int));
+
+
   setbuf(stdin, NULL);  // stdin, stdout e stderr não terão buffers
   setbuf(stdout, NULL); // assim, nada é "guardado temporariamente"
   setbuf(stderr, NULL);
@@ -279,7 +380,7 @@ int main() {
   }
 
   scanf("TABLE %s\n", temp);
-  cartasMesa = le_carta_table(temp, totalCartasMesa, cartasMesa, false);
+  cartasMesa = le_carta_table(temp, totalCartasMesa, cartasMesa, false, -1);
 
   debug("------TABLE------");
   fprintf(stderr,"total de cartas no TABLE: %d\n", *totalCartasMesa);
@@ -312,53 +413,61 @@ int main() {
           scanf(" %s", secondComplement);
       }
       
-      fprintf(stderr, "compare DISCARD: %d \n",strcmp(action,"DISCARD"));
+      //fprintf(stderr, "compare DISCARD: %d \n",strcmp(action,"DISCARD"));
 
       if(strcmp(action,"TURN")==0 && strcmp(complement,my_id)!=0){
-          debug("desliga pulouVez");
+          //debug("desliga pulouVez");
           strcpy(jogadorDaVez, complement);
           pulouVez = false;
           vouComprar = false;
       }
 
       if(strcmp(action,"BUY")==0 && strcmp(complement,my_id)!=0){
-          debug("desliga pulouVez");
+          //debug("desliga pulouVez");
           pulouVez = false;
           vouComprar = false;
       }
 
       if(strcmp(action,"BUY")==0 && complement[0] == '1'
           &&  (strcmp(jogadorDaVez, jogadores[adversarios[0]])== 0 || 
-               strcmp(jogadorDaVez, jogadores[adversarios[0]])== 0)){
-          
-          debug("meus adversarios compraram 1");
+               strcmp(jogadorDaVez, jogadores[adversarios[1]])== 0)){
+          //AQUI - implementar uma lista com as cartas que os oponentes não têm.
+
+          int indiceAdversario = strcmp(jogadorDaVez, jogadores[adversarios[0]])== 0 ?adversarios[0]: adversarios[1];
+
+          cartasAdversariosNaoPossuem = le_carta_table(cartasMesa[*totalCartasMesa-1].strCarta, totalAdversariosNaoPossuem, cartasAdversariosNaoPossuem, false, indiceAdversario);
+
+          for(int i = 0; i< *totalAdversariosNaoPossuem; i++){
+            imprime_carta(cartasAdversariosNaoPossuem[i]);
+          }
+          //debug("meus adversarios compraram 1");
       }
 
       if(strcmp(action,"DISCARD")==0){
-        debug(" Entrou pra ler discard");
-        cartasMesa = le_carta_table(complement, totalCartasMesa, cartasMesa, false);
+        //debug(" Entrou pra ler discard");
+        cartasMesa = le_carta_table(complement, totalCartasMesa, cartasMesa, false, -1);
         
         if(cartasMesa[*totalCartasMesa-1].efeito=='R'){
-            debug("liga pulouVez");
+            //debug("liga pulouVez");
             pulouVez = true;
         }
 
         if(strcmp(jogadorDaVez, jogadores[adversarios[0]]) == 0
             && (cartasMesa[*totalCartasMesa-1].efeito=='V' || cartasMesa[*totalCartasMesa-1].efeito=='C')){
-            debug("é meu adversario , vou ter que comprar");
+            //debug("é meu adversario , vou ter que comprar");
             vouComprar = true;
         }
 
         if(cartasMesa[*totalCartasMesa-1].efeito=='D'){
-            debug("Inverteu o jogo");
+            //debug("Inverteu o jogo");
             troca_adversarios(adversarios);
         }
 
-        debug("------TABLE DISCARD------");
+        /*debug("------TABLE DISCARD------");
         fprintf(stderr,"total de cartas no TABLE: %d\n", *totalCartasMesa);
         for (int i = 0; i < *totalCartasMesa; i++) {
             imprime_carta(cartasMesa[i]);
-        }
+        }*/
       }
       debug("-----------------------------------------------------");
 
@@ -394,14 +503,15 @@ int main() {
 
       }else{
 
-          int indiceCarta = escolhe_carta(cartas, totalCartas, totalCartasMesa, cartasMesa[*totalCartasMesa-1], secondComplement); 
+          int indiceCarta = escolhe_carta(cartas, totalCartas, totalCartasMesa, cartasMesa[*totalCartasMesa-1], secondComplement, 
+                                                               cartasAdversariosNaoPossuem, totalAdversariosNaoPossuem, adversarios[1]); 
           if(indiceCarta >= 0){
               
               debug("------CARTA NA MESA ------");
               imprime_carta(cartasMesa[*totalCartasMesa-1]);
               debug("------CARTA JOGADA ------");
               imprime_carta(cartas[indiceCarta]);
-              cartasMesa = le_carta_table(cartas[indiceCarta].strCarta, totalCartasMesa, cartasMesa, true);
+              cartasMesa = le_carta_table(cartas[indiceCarta].strCarta, totalCartasMesa, cartasMesa, true, -1);
               cartas[indiceCarta].mao=false;
               if(cartas[indiceCarta].efeito=='D'){
                  troca_adversarios(adversarios);
@@ -409,7 +519,7 @@ int main() {
         
               if(cartas[indiceCarta].efeito=='A' || cartas[indiceCarta].efeito=='C'){
                   strcpy(secondComplement, cartas[indiceCarta].naipe);
-                  printf("DISCARD %s %s\n", cartas[indiceCarta].strCarta, cartas[indiceCarta].naipe);
+                  printf("DISCARD %s %s\n", cartas[indiceCarta].strCarta, cartas[indiceCarta].mudaNaipe==NULL? cartas[indiceCarta].naipe: cartas[indiceCarta].mudaNaipe);
               }else{
                   printf("DISCARD %s\n", cartas[indiceCarta].strCarta);
               }
