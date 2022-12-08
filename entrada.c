@@ -123,12 +123,8 @@ Carta* compra_carta(int quantidade, char action[], int* totalCartas, Carta* cart
   printf("BUY %d\n", quantidade);
   for(int i=0; i<quantidade; i++){
     scanf("%s ", action);
-    debug(action);
     cartas_compradas = le_carta_table(action, totalCartas, cartas_compradas, true, -1);
   }
 
-  for(int i= *totalCartas-quantidade;  i<*totalCartas; i++){
-    imprime_carta(cartas_compradas[i]);
-  }
   return cartas_compradas;
 }
