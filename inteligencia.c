@@ -43,11 +43,97 @@ void troca_adversarios(int adversarios[]){
 
 char* escolhe_proximo_naipe(Carta cartasProxOponente[], int totalCartasProxOponente, Carta* cartas, int *totalCartas){
 
-      if(totalCartasProxOponente>0){
-          return cartasProxOponente[totalCartasProxOponente-1].naipe;  
+      char paus[] = "♣";
+      char ouros[] = "♦";
+      char copas[] = "♥";
+      char espadas[] = "♦";
+
+      int totalPausAdversario= 0;
+      int totalOurosAdversario = 0;
+      int totalCopasAdversario = 0;
+      int totalEspadasAdversario = 0;
+
+      int totalPausHand= 0;
+      int totalOurosHand = 0;
+      int totalCopasHand = 0;
+      int totalEspadasHand = 0;
+
+      bool possuiCartasOponente = totalCartasProxOponente>0;
+
+      if(possuiCartasOponente){
+          for(int i = 0; i< totalCartasProxOponente; i++){
+               if(strcmp(cartasProxOponente[i].naipe, paus)==0)
+                   totalPausAdversario ++;
+
+               if(strcmp(cartasProxOponente[i].naipe, ouros)==0)
+                   totalOurosAdversario++;
+
+               if(strcmp(cartasProxOponente[i].naipe, copas)==0)
+                   totalCopasAdversario++;
+
+               if(strcmp(cartasProxOponente[i].naipe, espadas)==0)
+                   totalEspadasAdversario++;
+          } 
       }
 
-      //♣ ♠ ♦ ♥
+      for(int i = 0; i< totalCartasProxOponente; i++){
+           if(strcmp(cartasProxOponente[i].naipe, paus)==0)
+               totalPausHand ++;
+
+           if(strcmp(cartasProxOponente[i].naipe, ouros)==0)
+               totalOurosHand++;
+
+           if(strcmp(cartasProxOponente[i].naipe, copas)==0)
+               totalCopasHand++;
+
+           if(strcmp(cartasProxOponente[i].naipe, espadas)==0)
+               totalEspadasHand++;
+      }
+      
+
+      if(possuiCartasOponente && totalPausAdversario > totalOurosAdversario && totalPausAdversario> totalCopasAdversario && totalPausAdversario > totalEspadasAdversario){
+          if(totalPausHand > 0){
+            return paus;
+          }  
+      }
+      
+
+      if(possuiCartasOponente && totalOurosAdversario > totalPausAdversario && totalOurosAdversario > totalCopasAdversario && totalOurosAdversario > totalEspadasAdversario){
+          if(totalOurosHand > 0){
+            return ouros;
+          }  
+      }
+      
+
+      if(possuiCartasOponente && totalCopasAdversario > totalPausAdversario && totalCopasAdversario> totalOurosAdversario && totalCopasAdversario > totalEspadasAdversario){
+          if(totalCopasHand > 0){
+            return copas;
+          }  
+      }
+      
+
+      if(possuiCartasOponente && totalEspadasAdversario > totalPausAdversario && totalEspadasAdversario> totalOurosAdversario && totalEspadasAdversario > totalCopasAdversario){
+          if(totalEspadasHand > 0){
+            return espadas;
+          }  
+      }
+
+
+      if(totalPausHand > totalOurosHand && totalPausHand> totalCopasHand && totalPausHand > totalEspadasHand)
+          return paus;
+      
+
+      if(totalOurosHand > totalPausHand && totalOurosHand> totalCopasHand && totalOurosHand > totalEspadasHand)
+          return ouros;
+      
+
+      if(totalCopasHand > totalPausHand && totalCopasHand> totalOurosHand && totalCopasHand > totalEspadasHand)
+          return copas;
+      
+
+      if(totalEspadasHand > totalPausHand && totalEspadasHand> totalOurosHand && totalEspadasHand > totalCopasHand)
+          return espadas;
+      
       return NULL;
 
 }
