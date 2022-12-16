@@ -1,5 +1,5 @@
 # Uno
-Este repositório contém o projeto final desenvolvido pelos alunos SAMUEL JACINTHO DE AMORIN JUNIOR e LUCAS PINHEIRO CALDAS para a matéria de Introdução às Técnicas de Programação ofertada pelo curso de Bacharelado em Tecnologia da Informação - IMD/UFRN. Nesse projeto foi desenvolvido um bot que joga uma versão do jogo de cartas UNO criado pelos professores da disciplina.
+Este repositório contém o projeto final desenvolvido pelos alunos SAMUEL JACINTHO DE AMORIN JUNIOR e LUCAS PINHEIRO CALDAS para a matéria de Introdução às Técnicas de Programação ofertada pelo curso de Bacharelado em Tecnologia da Informação - IMD/UFRN, ministrada pelo WELLINGTON SILVA DE SOUZA, no 2º semetre de 2022. Nesse projeto foi desenvolvido um bot que joga uma versão do jogo de cartas UNO criado pelos professores da disciplina. Repositório do fonte: https://github.com/samuamorin/uno.
 
 ## Introdução
 Esta é uma versão do jogo de baralho Uno, com algumas diferenças:
@@ -28,31 +28,35 @@ Bom jogo!!!
 
 ## Executando o jogo
 
-O gerenciador do jogo Uno se encontra no formato binário do Linux. Então, você precisará executá-lo sobre esse sistema operacional. Se seu computador for Windows, poderá usar o WSL.
+O gerenciador do jogo Uno se encontra no formato binário do Linux. Então, você precisará executá-lo sobre esse sistema operacional.
 
-Caso não tenha o WSL, nem queira instalá-lo, você poderá executar o jogo também via replit.
+Você poderá executar o jogo também via replit, que foi o ambiente de desenvolvimento utilizado para o qual a versão atual foi testada e está funcional.
 
 ## Como rodar nosso bot (Kaspa)
 Compilação:
-
-cd modulo
 
 make all
 
 Para rodar o Kaspa (nosso executável):
 
-cd ..
-./uno -q bot_A bot_B kaspa
+make run
 
 ## Estrutura do bot
 Neste projeto você encontrará 5 arquivos responsáveis pelo bot:
 
 
-carta.h : local que guarda a estrutura das cartas.
-entrada.c : local onde estão localizadas as funções que recebem os dados de entrada, responsável pela leitura das cartas da mão, mesa e  dos jogadores.
-intelgencia.c : arquivo em que está contida as estratégia a ser seguida pelo bot ao longo da partida. 
-log.c : responsável pela impressão das cartas.
-main.c : arquivo principal do projeto.
+*carta.h : define a estrutura das cartas.
+*entrada.c : implementa as funções que recebem os dados de entrada, responsável pela leitura das cartas da mão, mesa e  dos jogadores.
+*intelgencia.c : arquivo em que está contida as estratégia a ser seguida pelo bot ao longo da partida. 
+*log.c : responsável pela impressão das cartas.
+*main.c : arquivo principal do projeto.
 
+## Estratégia de escolha de cartas
 
+O bot vertifica todas as cartas que possui em mão e que podem ser jogadas na rodadas, e descarta com a seguinte precedência:
+ - Coringa
+ - Às
+ - Valete
+ - O correspondente ao naipe ou valor da carta o qual possui em maior quantidade em mãos.
 
+Ao jogar uma carta que muda o naipe, o bot é capaz de analisar as jogadas prévias do adversário escolher aquele que fez com que passasse mais sua vez.
