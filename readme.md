@@ -1,10 +1,7 @@
 # Uno
-
-Vídeo de apresentação do projeto:
-https://www.loom.com/share/6dd991e2abef48618560d80ae4c8bfdb
+Este repositório contém o projeto final desenvolvido pelos alunos SAMUEL JACINTHO DE AMORIN JUNIOR e LUCAS PINHEIRO CALDAS para a matéria de Introdução às Técnicas de Programação ofertada pelo curso de Bacharelado em Tecnologia da Informação - IMD/UFRN. Nesse projeto foi desenvolvido um bot que joga uma versão do jogo de cartas UNO criado pelos professores da disciplina.
 
 ## Introdução
-
 Esta é uma versão do jogo de baralho Uno, com algumas diferenças:
 
 A primeira é que este é um jogo baseado em turnos. Ou seja, um jogador só age quando for sua vez. Logo, não haverá a opção de gritar "UNO" quando um jogador tiver apenas uma carta. Essa regra foi deixada de fora.
@@ -31,61 +28,31 @@ Bom jogo!!!
 
 ## Executando o jogo
 
-O gerenciador do jogo Uno se encontra no formato binário do Linux. Então, você precisará executá-lo sobre esse sistema operacional. Se seu computador for Windows, poderá usar o [WSL](https://learn.microsoft.com/pt-br/windows/wsl/install).
+O gerenciador do jogo Uno se encontra no formato binário do Linux. Então, você precisará executá-lo sobre esse sistema operacional. Se seu computador for Windows, poderá usar o WSL.
 
-Caso não tenha o WSL, nem queira instalá-lo, você poderá executar o jogo também via replit. Assim, você pode tanto baixar os arquivos do github e trabalhar localmente, quanto acessar e trabalhar remotamente pelo replit, como descrito a seguir.
+Caso não tenha o WSL, nem queira instalá-lo, você poderá executar o jogo também via replit.
 
-### Trabalhando localmente
+## Como rodar nosso bot (Kaspa)
+Compilação:
 
-Para trabalhar no seu projeto localmente, instale o git (caso não já tenha) e crie um clone do projeto (ou faça um fork) digitando a seguinte linha no terminal (linux):
+cd modulo
 
-```sh
-git clone https://github.com/amccampos/uno
-```
+make all
 
-Você encontrará 6 arquivos:
-- `readme.md`: este arquivo.
-- `bot_A.c`: template inicial com explicações para a criação de um bot.
-- `bot_B.c`: contém o mesmo conteúdo de `bot_A.c`, permitindo ter um backup das explicações.
-- `bot_A`: executável com um comportamento básico para fins de teste.
-- `bot_B`: mesmo executável `bot_A`, mas outro nome para você poder colocar um para jogar com o outro.
-- `uno`: programa gerenciador do jogo Uno.
+Para rodar o Kaspa (nosso executável):
 
-Os arquivos `uno`, `bot_A` e `bot_B` são executáveis no formato do linux (não funcionam em outro S.O.). Você deve trabalhar, portanto, no Linux ou no WSL (sobre o Windows).
+cd ..
+./uno -q bot_A bot_B kaspa
 
-Para ter uma ideia do funcionamento do jogo, chame o programa `uno` passando como parâmetro os dois programas-bot que irão jogar na partida.
+## Estrutura do bot
+Neste projeto você encontrará 5 arquivos responsáveis pelo bot:
 
-```sh
-./uno bot_A bot_B
-```
 
-O console apresentará a sequência de ações realizadas pelos bots.
+carta.h : local que guarda a estrutura das cartas.
+entrada.c : local onde estão localizadas as funções que recebem os dados de entrada, responsável pela leitura das cartas da mão, mesa e  dos jogadores.
+intelgencia.c : arquivo em que está contida as estratégia a ser seguida pelo bot ao longo da partida. 
+log.c : responsável pela impressão das cartas.
+main.c : arquivo principal do projeto.
 
-Para construir teu projeto, edite um dos arquivos `bot_A.c` ou `bot_B.c`. Estes arquivos são templates de um bot rudimentar, mas com instruções preciosas para você começar a implementar teu próprio bot. O arquivo compila e executa normalmente, usando, por exemplo:
 
-```sh
-gcc bot_A.c -o bot_A
-```
 
-Com esse comando, uma nova versão do programa `bot_A` é gerada e pode ser testada com `./uno bot_A bot_B`. Porém, como você verá, o comportamento é simples. O único comportamento que ele tem é descartar a carta A♥ na sua vez. Cabe a você melhorá-lo.
-
-Lembre-se de organizar tua solução em diferentes funções e separando em diferentes módulos (arquivos .c e .h). Você pode, por exemplo, ter um módulo só com operações sobre as cartas do baralho, outro com as funções de raciocínio sobre as cartas que os outros jogadores têm na mão, entre outros.
-
-### Trabalhando no replit
-
-Antes de qualquer coisa, quem for trabalhar no replit terá que criar um fork do projeto que se encontra em https://replit.com/@amccampos/uno. O botão "Fork Repl" fará isso.
-
-Os mesmos encaminhamentos fornecidos para quem for trabalhar localmente são válidos para quem for trabalhar no replit, visto que há também um terminal Linux sobre o qual você poderá trabalhar.
-
-A principal diferença é que você não precisará instalar nada. Além disso, o botão "Play" do projeto está configurado para executar o comando:
-```sh
-./uno bot_A bot_B
-```
-
-Ao clicar no Play, uma nova partida será executada com os bots `bot_A` `bot_B`, levando em conta que eles já foram compilados. A responsabilidade de gerar o executável do seu bot é sua. Portanto, **sempre que você fizer uma alteração no código-fonte de seu bot, certifique-se de compilá-lo antes de clicar no botão Play**.
-
-A forma de compilar é idêntica à compilação de quem trabalha localmente:
-
-```sh
-gcc bot_A.c -o bot_A
-```
