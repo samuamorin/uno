@@ -1,7 +1,7 @@
 all: kaspa
 
-CC = clang
-override CFLAGS += -g -Wno-everything -pthread -lm
+CC = gcc
+override CFLAGS += -g -pthread -lm
 
 SRCS = $(shell find . -name '.ccls-cache' -type d -prune -o -type f -name '*.c' -print)
 HEADERS = $(shell find . -name '.ccls-cache' -type d -prune -o -type f -name '*.h' -print)
@@ -16,4 +16,4 @@ clean:
 	rm -f kaspa kaspa-debug
 
 run:
-	./uno -q bot_A bot_B kaspa
+	./uno -v -s88410 bot_A bot_B kaspa

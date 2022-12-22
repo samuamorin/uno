@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "carta.h"
+#include "entrada.h"
 #include "log.h"
 #include "inteligencia.h"
 
