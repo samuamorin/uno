@@ -42,11 +42,16 @@ void troca_adversarios(int adversarios[]){
 
 
 char* escolhe_proximo_naipe(Carta cartasProxOponente[], int totalCartasProxOponente, Carta* cartas, int *totalCartas){
+      debug("vou escolher outro naipe");
+      char* paus = malloc((sizeof(char)*4));
+      char* ouros = malloc((sizeof(char)*4));
+      char* copas = malloc((sizeof(char)*4));
+      char* espadas = malloc((sizeof(char)*4));
 
-      char paus[] = "♣";
-      char ouros[] = "♦";
-      char copas[] = "♥";
-      char espadas[] = "♦";
+      paus = strcpy(paus,"♣");
+      ouros = strcpy(ouros,"♦");
+      copas = strcpy(copas,"♥");
+      espadas = strcpy(espadas,"♦");
 
       int totalPausAdversario= 0;
       int totalOurosAdversario = 0;
