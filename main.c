@@ -72,7 +72,7 @@ int main() {
 
 
 
-      if(complement[0]=='C' || complement[0]=='A'){
+      if(complement[0]=='C' || (strcmp(complement,"ACTION")!=0 && complement[0]=='A')){
           scanf(" %s", secondComplement);
       }
       
