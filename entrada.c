@@ -4,6 +4,7 @@
 #include<stdlib.h>
 #include "carta.h"
 
+//leitura dos jogadores
 char** le_jogadores(char temp[], int* totalJogadores) {
   debug("vou ler jogadores");
   char **jogadores = NULL;
@@ -31,6 +32,7 @@ char** le_jogadores(char temp[], int* totalJogadores) {
   return jogadores;
 }
 
+//preenche o naipe da carta
 void preenche_naipe(char *strCarta, int inicio, char strNaipe[4]) {
   
   int j = 0;
@@ -46,6 +48,7 @@ void preenche_naipe(char *strCarta, int inicio, char strNaipe[4]) {
 
 }
 
+//monta a carta de acordo com a definicao do typedef
 Carta criar_carta(char *strCarta, bool minha, bool mao, int indiceAdversario) {
 
   Carta carta;
@@ -85,6 +88,7 @@ Carta criar_carta(char *strCarta, bool minha, bool mao, int indiceAdversario) {
   return carta;
 }
 
+//leitura das cartas distribuidas ao jogador no inicio da partida
 Carta* le_cartas_hand(char temp[], int* totalcartas, Carta* cartas) {
 
   int i = *totalcartas;
@@ -105,6 +109,7 @@ Carta* le_cartas_hand(char temp[], int* totalcartas, Carta* cartas) {
   return cartas;
 }
 
+//leitura das cartas descartadas pelos adversarios e pelo proprio bot
 Carta* le_carta_table(char temp[], int* totalcartas, Carta* cartas, bool minha, int indiceAdversario) {
 
   int i = *totalcartas;
@@ -122,6 +127,7 @@ Carta* le_carta_table(char temp[], int* totalcartas, Carta* cartas, bool minha, 
   return cartas;
 }
 
+//compra as cartas de acordo com a quantidade se C ou V ou passar a vez
 Carta* compra_carta(int quantidade, char action[], int* totalCartas, Carta* cartas){
   Carta *cartas_compradas = cartas; 
   printf("BUY %d\n", quantidade);
