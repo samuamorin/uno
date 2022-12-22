@@ -9,7 +9,7 @@
 
 #define MAX_LINE 100
 #define MAX_ACTION 10
-#define MAX_ID_SIZE 10
+#define MAX_ID_SIZE 20
 
 
 int main() {
