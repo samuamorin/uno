@@ -6,7 +6,6 @@
 
 //leitura dos jogadores
 char** le_jogadores(char temp[], int* totalJogadores) {
-  debug("vou ler jogadores");
   char **jogadores = NULL;
   int i = 0;
 
@@ -27,7 +26,6 @@ char** le_jogadores(char temp[], int* totalJogadores) {
 
   *totalJogadores = i;
 
-  debug("li jogadores");
 
   return jogadores;
 }

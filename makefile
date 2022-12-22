@@ -16,4 +16,5 @@ clean:
 	rm -f kaspa kaspa-debug
 
 run:
-	./uno -v -s88410 bot_A bot_B kaspa
+	./uno -q 02 04 kaspa
+
