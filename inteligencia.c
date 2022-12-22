@@ -40,7 +40,8 @@ void troca_adversarios(int adversarios[]){
 }
 
 
-
+//escolhe o proximo naipe caso C ou A de acordo com a maior quantidade de vezes que determinado naipe fez o adversario passar a vez
+// ou com a maior quantidade de naipes ainda existentes na mao do bot
 char* escolhe_proximo_naipe(Carta cartasProxOponente[], int totalCartasProxOponente, Carta* cartas, int *totalCartas){
       debug("vou escolher outro naipe");
       char* paus = malloc((sizeof(char)*4));
@@ -143,6 +144,7 @@ char* escolhe_proximo_naipe(Carta cartasProxOponente[], int totalCartasProxOpone
 
 }
 
+//muda o naipe da carta caso A ou C
 char* mudaNaipe(Carta cartasProxOponente[], int totalCartasProxOponente, Carta* cartas, int *totalCartas, char naipeAtual[]){
 
   char* mudaNaipe = malloc(sizeof(char)*4);
@@ -159,6 +161,11 @@ char* mudaNaipe(Carta cartasProxOponente[], int totalCartasProxOponente, Carta* 
   
 }
 
+//escolhe a carta a ser descartada pelo bot com a seguinte precedencia
+// 1- Coringa
+// 2- A
+// 3 - V
+// 4 - maior quantidade existente na mao entre valor e naipe
 int escolhe_carta(Carta* cartas, int* totalCartas, int* totalCartasMesa, Carta cartaMesa, char secondComplement[], Carta* cartasAdversarios, int* totalAdversarios, int adversario){
 
     int cartasJogaveis[*totalCartas];
