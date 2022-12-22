@@ -48,9 +48,6 @@ int main() {
   scanf("HAND [ %[^\n]\n", temp);
   cartas = le_cartas_hand(temp, totalCartas, cartas);
 
-  for (int i = 0; i < *totalCartas; i++) {
-    imprime_carta(cartas[i]);
-  }
 
   scanf("TABLE %s\n", temp);
   cartasMesa = le_carta_table(temp, totalCartasMesa, cartasMesa, false, -1);
@@ -68,15 +65,13 @@ int main() {
 
   while (1) {
 
-   
     do {
-      debug("-------------- JOGADA ADVERSARIO -------------------");
       scanf("%s %s", action, complement);
       debug(action);
       debug(complement);
 
 
-      
+
       if(complement[0]=='C' || complement[0]=='A'){
           scanf(" %s", secondComplement);
       }
@@ -121,11 +116,9 @@ int main() {
         }
 
       }
-      debug("-----------------------------------------------------");
 
     } while (strcmp(action, "TURN") || strcmp(complement, my_id));
 
-      debug("----- MINHA VEZ -----");
 
       if(cartasMesa[*totalCartasMesa -1].efeito=='R' && (strcmp(jogadorDaVez, jogadores[adversarios[0]])==0) && pulouVez){
         pulouVez = false;
@@ -133,15 +126,13 @@ int main() {
       }else if(!cartasMesa[*totalCartasMesa -1].minha && vouComprar){
         
         if(cartasMesa[*totalCartasMesa -1].efeito=='V'){
-            cartas = compra_carta(2,action,totalCartas,cartas);
             vouComprar = false;
-            printf(" \n");
+            cartas = compra_carta(2,action,totalCartas,cartas);
         }
 
         if(cartasMesa[*totalCartasMesa -1].efeito=='C'){
-            cartas = compra_carta(4,action,totalCartas,cartas);
             vouComprar = false;
-            printf(" \n");
+            cartas = compra_carta(4,action,totalCartas,cartas);
         }
 
       }else{
@@ -164,7 +155,6 @@ int main() {
               }
           }else{
               cartas = compra_carta(1,action,totalCartas,cartas);
-              printf(" \n");
           }
       }
   }

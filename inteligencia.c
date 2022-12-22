@@ -43,7 +43,6 @@ void troca_adversarios(int adversarios[]){
 //escolhe o proximo naipe caso C ou A de acordo com a maior quantidade de vezes que determinado naipe fez o adversario passar a vez
 // ou com a maior quantidade de naipes ainda existentes na mao do bot
 char* escolhe_proximo_naipe(Carta cartasProxOponente[], int totalCartasProxOponente, Carta* cartas, int *totalCartas){
-      debug("vou escolher outro naipe");
       char* paus = malloc((sizeof(char)*4));
       char* ouros = malloc((sizeof(char)*4));
       char* copas = malloc((sizeof(char)*4));
