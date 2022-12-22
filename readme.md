@@ -1,5 +1,5 @@
 # Uno
-Este repositório contém o projeto final desenvolvido pelos alunos SAMUEL JACINTHO DE AMORIN JUNIOR e LUCAS PINHEIRO CALDAS para a matéria de Introdução às Técnicas de Programação ofertada pelo curso de Bacharelado em Tecnologia da Informação - IMD/UFRN, ministrada pelo WELLINGTON SILVA DE SOUZA, no 2º semestre de 2022. Nesse projeto foi desenvolvido um bot que joga uma versão do jogo de cartas UNO criado pelos professores da disciplina. Repositório do fonte: https://github.com/samuamorin/uno. Ambiente Replit para teste: https://replit.com/@SamuelJacintho/uno-funcionando
+Este repositório contém o projeto final desenvolvido pelos alunos SAMUEL JACINTHO DE AMORIN JUNIOR e LUCAS PINHEIRO CALDAS para a matéria de Introdução às Técnicas de Programação ofertada pelo curso de Bacharelado em Tecnologia da Informação - IMD/UFRN, ministrada pelo WELLINGTON SILVA DE SOUZA, no 2º semestre de 2022. Nesse projeto foi desenvolvido um bot que joga uma versão do jogo de cartas UNO criado pelos professores da disciplina. Repositório do fonte: https://github.com/samuamorin/uno. 
 
 ## Introdução
 Esta é uma versão do jogo de baralho Uno, com algumas diferenças:
@@ -30,7 +30,6 @@ Bom jogo!!!
 
 O gerenciador do jogo Uno se encontra no formato binário do Linux. Então, você precisará executá-lo sobre esse sistema operacional.
 
-Você poderá executar o jogo também via replit, que foi o ambiente de desenvolvimento utilizado para o qual a versão atual foi testada e está funcional.
 
 ## Como rodar nosso bot (Kaspa)
 Compilação:
